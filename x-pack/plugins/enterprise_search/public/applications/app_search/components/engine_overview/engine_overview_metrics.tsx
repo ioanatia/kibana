@@ -9,7 +9,7 @@ import React, { useEffect } from 'react';
 
 import { useActions, useValues } from 'kea';
 
-import { EuiFlexGroup, EuiFlexItem, EuiSpacer } from '@elastic/eui';
+import { EuiCallOut, EuiFlexGroup, EuiFlexItem, EuiSpacer, EuiButton } from '@elastic/eui';
 import { i18n } from '@kbn/i18n';
 
 import { getEngineBreadcrumbs } from '../engine';
@@ -22,7 +22,7 @@ import { SuggestedCurationsCallout } from './components/suggested_curations_call
 import { EngineOverviewLogic } from '.';
 
 export const EngineOverviewMetrics: React.FC = () => {
-  const { loadOverviewMetrics } = useActions(EngineOverviewLogic);
+  const { loadOverviewMetrics, migrateEngine } = useActions(EngineOverviewLogic);
   const { dataLoading } = useValues(EngineOverviewLogic);
 
   useEffect(() => {
@@ -40,6 +40,15 @@ export const EngineOverviewMetrics: React.FC = () => {
       isLoading={dataLoading}
       data-test-subj="EngineOverview"
     >
+      <EuiCallOut title="Migrate to Elasticsearch">
+        <p>A very convincing explanation why you need to push the migrate button!</p>
+        <EuiButton
+          onClick={migrateEngine}
+         >
+          Migrate Now!
+        </EuiButton>
+      </EuiCallOut>
+      <EuiSpacer size="xl" />
       <SuggestedCurationsCallout />
       <EuiFlexGroup>
         <EuiFlexItem grow={1}>

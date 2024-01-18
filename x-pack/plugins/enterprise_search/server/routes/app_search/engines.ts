@@ -114,4 +114,17 @@ export function registerEnginesRoutes({
       path: '/as/engines/:name/overview_metrics',
     })
   );
+  router.post(
+    {
+      path: '/internal/app_search/engines/{name}/migrate',
+      validate: {
+        params: schema.object({
+          name: schema.string(),
+        }),
+      },
+    },
+    enterpriseSearchRequestHandler.createRequest({
+      path: '/api/as/v1/engines/:name/elasticsearch/_migrate',
+    })
+  );
 }

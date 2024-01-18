@@ -10,6 +10,7 @@ import { kea, MakeLogicType } from 'kea';
 import { flashAPIErrors } from '../../../shared/flash_messages';
 import { HttpLogic } from '../../../shared/http';
 import { EngineLogic } from '../engine';
+import { KibanaLogic } from '../../../shared/kibana';
 
 interface EngineOverviewApiData {
   documentCount: number;
@@ -26,6 +27,7 @@ interface EngineOverviewValues extends EngineOverviewApiData {
 interface EngineOverviewActions {
   loadOverviewMetrics(): void;
   onOverviewMetricsLoad(response: EngineOverviewApiData): EngineOverviewApiData;
+  migrateEngine(): void;
 }
 
 export const EngineOverviewLogic = kea<MakeLogicType<EngineOverviewValues, EngineOverviewActions>>({
@@ -33,6 +35,7 @@ export const EngineOverviewLogic = kea<MakeLogicType<EngineOverviewValues, Engin
   actions: () => ({
     loadOverviewMetrics: true,
     onOverviewMetricsLoad: (engineMetrics) => engineMetrics,
+    migrateEngine: false
   }),
   reducers: () => ({
     dataLoading: [
@@ -92,5 +95,18 @@ export const EngineOverviewLogic = kea<MakeLogicType<EngineOverviewValues, Engin
         flashAPIErrors(e);
       }
     },
+    migrateEngine: async () => {
+      const { http } = HttpLogic.values;
+      const { engineName } = EngineLogic.values;
+
+      try {
+        await http.post(
+          `/internal/app_search/engines/${engineName}/migrate`
+        );
+        KibanaLogic.values.navigateToUrl(`/app/enterprise_search/applications/search_applications/search-app-${engineName}`, { shouldNotCreateHref: true });
+      } catch (e) {
+        flashAPIErrors(e);
+      }
+    }
   }),
 });
